@@ -1,7 +1,8 @@
 # Summary
 
-* [Introduction](README.md)
-* [简介](简介.md)
-* [安装](安装.md)
-  * [linux](安装.md)
+* [简介](intro.md)
+* [安装](install.md)
+  * [linux](install.md)
+* [入门](basic.md)
+  * [stap](stap.md)
 
