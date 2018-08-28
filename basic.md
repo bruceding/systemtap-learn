@@ -56,3 +56,34 @@ SystemTap 脚本也可以定义函数，函数可以在多个 probe 中使用，
 
 #### 异步事件
 
+异步事件指不会绑定在特定的指令或者代码中，主要包括计数器，计时器等类似结构。
+
+* begin
+
+SystemTap 脚本开始执行时运行的事件
+
+* end
+
+SystemTap 脚本结束运行的事件
+
+* timer events
+
+周期性的执行 handler 处理器的事件。比如
+
+```
+probe timer.s(4)
+{
+  printf("hello world\n")
+}
+```
+
+上面的事件是指每隔4s钟打印 `hello world`。计时器事件包括    
+
+   * timer.ms(milliseconds)
+   * timer.us(microseconds) 
+   * timer.ns(nanoseconds)
+   * timer.hz(hertz) 
+   * timer.jiffies(jiffies) 
+
+计时器事件可以周期性的收集信息，而且也可以获取两次事件之间的数据差异。
+
