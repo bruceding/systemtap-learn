@@ -45,5 +45,3 @@ contos 7 版本可以通过 [http://debuginfo.centos.org/7/x86_64/](http://debug
  # sudo stap -v -e 'probe begin {print("hello world\n");exit()}'
 ```
 看到输出 hello world， 至此安装成功。
-
-

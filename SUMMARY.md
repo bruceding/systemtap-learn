@@ -3,7 +3,9 @@
 * [简介](intro.md)
 * [安装](install.md)
   * [linux](install.md)
+  * [ubuntu](install-ubuntu.md)
 * [入门](basic.md)
   * [printf](printf.md)
   * [stap](stap.md)
+  * [变量](variable.md)
 
