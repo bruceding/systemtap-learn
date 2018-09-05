@@ -1,0 +1,7 @@
+probe kernel.function(@1) {
+    printf("%s\n", $$parms$);
+}
+probe timer.ms($2) {
+    exit();
+}
+
