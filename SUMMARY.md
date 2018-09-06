@@ -9,5 +9,8 @@
   * [stap](stap.md)
   * [变量](variable.md)
   * [命令行参数](command-line.md)
+* [Probe](probe.md)
 * [数组](arrays.md)
+* [聚集统计](statistics.md)
+* [Tapsets](tapset.md)
 
