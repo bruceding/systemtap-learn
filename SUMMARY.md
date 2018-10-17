@@ -17,4 +17,6 @@
 * [聚集统计](statistics.md)
 * [Tapsets](tapset.md)
 * [用户态 Probe](userspace-probe.md)
+* [有用的脚本](script-pre.md)
+    * [网络监控](script-network.md)
 
