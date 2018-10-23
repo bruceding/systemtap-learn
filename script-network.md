@@ -37,3 +37,12 @@
 
 ```
 inet_get_ip_source 和 inet_get_local_port 都是函数，也可以在 /usr/share/systemtap/tapset/ 目录下找到。
+
+### dropwatch.stp
+
+打印网络丢包情况，包丢在哪个阶段以及哪个pid，地址的丢包情况。
+
+```
+sudo stap -v --all-modules dropwatch.stp
+```
+
