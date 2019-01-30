@@ -32,3 +32,29 @@ T 表示动作，读为 R， W 为写。
 1093315 100033 (a.out) access "/home/bruceding/data/file.hole" read: 0 write: 20
 1093355 100033 (a.out) iotime "/home/bruceding/data/file.hole" time: 9
 ```
+### traceio.stp
+打印出进程累积的IO操作
+```
+ 20800            java r:       13 MiB w:        0   B
+   87639            java r:       69 KiB w:       46 KiB
+   20940        modprobe r:       53 KiB w:        0   B
+   87313            java r:       42 KiB w:      960   B
+    2919     barad_agent r:        2 KiB w:       15 KiB
+   20569          vmstat r:        5 KiB w:       86   B
+    2918     barad_agent r:      940   B w:        1 KiB
+   81349            java r:        1 KiB w:      232   B
+   20940         khelper r:      732   B w:        0   B
+   87879            java r:      331   B w:      364   B
+```
+### ioblktime.stp
+打印设备的IO时间
+```
+ device  rw total (us)      count   avg (us)
+       vdc   R  508025137       8899      57087
+       vdb   R   73066430       2436      29994
+       vdd   R    3477917         66      52695
+       vdb   W     109838          5      21967
+       vda   W       6487          5       1297
+       vdd   W      98615          2      49307
+       vdc   W     338257          2     169128
+```

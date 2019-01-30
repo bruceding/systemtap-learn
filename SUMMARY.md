@@ -20,4 +20,5 @@
 * [有用的脚本](script-pre.md)
     * [网络监控](script-network.md)
     * [IO监控](script-io.md)
+    * [CPU监控](script-cpu.md)
 
