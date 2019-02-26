@@ -1,0 +1,111 @@
+#! /usr/bin/env stap
+
+# 分析 SYN 包中的相关 tcp header 数据
+# Usage:
+#  sudo stap -v -g ./tcp_analyze.stp
+#
+%{
+#include <linux/version.h>
+#include <net/sock.h>
+#include <net/tcp.h>
+#include <net/ip.h>
+#include <linux/skbuff.h>
+#include <linux/time.h>
+%}
+function get_timestamp:long ()
+%{
+    struct timespec tv;
+    getnstimeofday(&tv);
+	STAP_RETVALUE = tv.tv_sec * 1000 + tv.tv_nsec / 1000000;
+	CATCH_DEREF_FAULT();
+%}
+function __tcp_skb_window:long (tcphdr:long)
+{
+	return @cast(tcphdr, "tcphdr")->window
+}
+function __ip_skb_ttl:long (iphdr)
+{
+  return @cast(iphdr, "iphdr", "kernel<linux/ip.h>")->ttl
+}
+function __ip_skb_version:long (iphdr)
+{
+  return @cast(iphdr, "iphdr", "kernel<linux/ip.h>")->version
+}
+function tcp_get_info_rcv_wscale:long(sock:long)
+%{ /* pure */
+	struct sock *sk = (struct sock *)(long) STAP_ARG_sock;
+	struct tcp_sock *tp = tcp_sk(sk);
+	STAP_RETVALUE = (int32_t) kread(&(tp->snd_wnd));
+	CATCH_DEREF_FAULT();
+%}
+function tcp_get_info_mss:long(skb:long)
+%{
+	struct sk_buff *skb;
+    struct tcp_options_received opt;
+
+	skb = (struct sk_buff *)(long)STAP_ARG_skb;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0)
+    tcp_parse_options(skb, &opt, 0);
+#else
+    tcp_parse_options(skb, &opt, 0, NULL);
+#endif
+    STAP_RETVALUE = (opt.mss_clamp);
+	CATCH_DEREF_FAULT();
+
+%}
+function tcp_get_info_snd_wscale:long(skb:long)
+%{
+	struct sk_buff *skb;
+    struct tcp_options_received opt;
+
+	skb = (struct sk_buff *)(long)STAP_ARG_skb;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0)
+    tcp_parse_options(skb, &opt, 0);
+#else
+    tcp_parse_options(skb, &opt, 0, NULL);
+#endif
+    STAP_RETVALUE = (opt.snd_wscale);
+	CATCH_DEREF_FAULT();
+
+%}
+function tcp_get_info_rcv_tsval:long(skb:long)
+%{
+	struct sk_buff *skb;
+    struct tcp_options_received opt;
+
+	skb = (struct sk_buff *)(long)STAP_ARG_skb;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0)
+    tcp_parse_options(skb, &opt, 0);
+#else
+    tcp_parse_options(skb, &opt, 0, NULL);
+#endif
+    STAP_RETVALUE = (opt.rcv_tsval);
+	CATCH_DEREF_FAULT();
+
+%}
+function get_header_size:long(tcphdr:long) 
+%{
+    struct tcphdr *th;
+	th = (struct tcphdr *)(long)STAP_ARG_tcphdr;
+    STAP_RETVALUE = (long)(th->doff*4);
+	CATCH_DEREF_FAULT();
+
+%}
+probe tcp.receive {
+    if (syn == 1 && ack == 0) {
+        size = get_header_size(tcphdr)
+        mss = tcp_get_info_mss($skb)
+        scale = tcp_get_info_snd_wscale($skb)
+        tsval = tcp_get_info_rcv_tsval($skb)
+        ttl = __ip_skb_ttl(iphdr)
+        timestamps = get_timestamp()
+
+        printf("%d\t%15s\t%15s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+                timestamps,saddr, daddr, sport, dport, __tcp_skb_window(tcphdr), mss, scale, tsval, ttl)
+    
+    }
+}
+probe begin{
+    printf("date\t          srcIp\t          dstIp\tsport\tdport\twindow\tmss\tscale\ttsval\tttl\n")
+}
+
